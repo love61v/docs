@@ -1,0 +1,83 @@
+user  nobody;# 工作进程的属主
+ worker_processes  4;# 工作进程数，一般与 CPU 核数等同
+
+ #error_log  logs/error.log; 
+ #error_log  logs/error.log  notice; 
+ #error_log  logs/error.log  info; 
+
+ #pid        logs/nginx.pid; 
+
+ events { 
+    use epoll;#Linux 下性能最好的 event 模式
+    worker_connections  2048;# 每个工作进程允许最大的同时连接数
+ } 
+
+ http { 
+    include       mime.types; 
+    default_type  application/octet-stream; 
+
+    #log_format  main  '$remote_addr - $remote_user [$time_local] $request ' 
+    #                  '"$status" $body_bytes_sent "$http_referer" ' 
+    #                  '"$http_user_agent" "$http_x_forwarded_for"'; 
+
+    #access_log  off; 
+    access_log  logs/access.log;# 日志文件名
+
+    sendfile        on; 
+    #tcp_nopush     on; 
+    tcp_nodelay     on; 
+
+    keepalive_timeout  65; 
+
+    include   gzip.conf; 
+    
+    # 集群中的所有后台服务器的配置信息
+    upstream tomcats { 
+  server 192.168.0.11:8080 weight=10; 
+  server 192.168.0.11:8081 weight=10; 
+  server 192.168.0.12:8080 weight=10; 
+  server 192.168.0.12:8081 weight=10; 
+  server 192.168.0.13:8080 weight=10; 
+  server 192.168.0.13:8081 weight=10; 
+    } 
+
+    server { 
+        listen       80;#HTTP 的端口
+        server_name  localhost; 
+
+        charset utf-8; 
+
+        #access_log  logs/host.access.log  main; 
+
+  location ~ ^/NginxStatus/ { 
+     stub_status on; #Nginx 状态监控配置
+     access_log off; 
+  } 
+
+  location ~ ^/(WEB-INF)/ { 
+     deny all; 
+  } 
+ 
+
+  location ~ \.(htm|html|asp|php|gif|jpg|jpeg|png|bmp|ico|rar|css|js|
+  zip|java|jar|txt|flv|swf|mid|doc|ppt|xls|pdf|txt|mp3|wma)$ { 
+             root /opt/webapp; 
+     expires 24h; 
+        } 
+
+        location / { 
+     proxy_pass http://tomcats;# 反向代理
+     include proxy.conf; 
+        } 
+
+        error_page 404 /html/404.html; 
+
+        # redirect server error pages to the static page /50x.html 
+        # 
+  error_page 502 503 /html/502.html; 
+        error_page 500 504 /50x.html; 
+        location = /50x.html { 
+            root   html; 
+        } 
+    } 
+ }

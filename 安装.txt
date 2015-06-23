@@ -1,0 +1,13 @@
+1.wget  http://nginx.org/download/nginx-1.6.2.tar.gz 
+2.	tar -zxvf ...
+3.  进入nginx目录  cd nginx-0.8.54   ./configure  
+   
+configure这一步可能会出现，找不到pcre的error 
+那么如果可以连网建议用yum命令去安装依赖包。
+	
+4.   yum -y install gcc pcre-devel openssl openssl-devel  
+
+5. 再 ./configure 
+6. make 
+7. make install  (默认安装到了 /usr/local/ningx目录下)
+8.  http://10.1.11.150/   (默认端口80)
