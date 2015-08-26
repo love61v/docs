@@ -26,7 +26,7 @@ public class PropertiesHolderUtils {
 	private final static Map<String, String> cacheProperty = new ConcurrentHashMap<String, String>();
 	
 	/**
-	 * 从缓存中取属性值
+	 * 从缓存中取属性值  
 	 *
 	 * @author 	: <a href="mailto:358911056@qq.com">hubo</a>  2015-8-4 下午3:03:37
 	 * @param key
