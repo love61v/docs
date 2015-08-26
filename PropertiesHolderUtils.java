@@ -22,7 +22,7 @@ public class PropertiesHolderUtils {
 	/** src/main/resources/system.config.properties 属性文件 */
 	private final static String CONFIG = "system.config.properties";
 	
-	/** map缓存*/
+	/** map缓存  */
 	private final static Map<String, String> cacheProperty = new ConcurrentHashMap<String, String>();
 	
 	/**
